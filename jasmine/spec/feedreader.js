@@ -3,155 +3,130 @@
  * This is the spec file that Jasmine will read and contains
  * all of the tests that will be run against your application.
  */
+
 /* We're placing all of our tests within the $() function,
  * since some of these tests may require DOM elements. We want
  * to ensure they don't run until the DOM is ready.
  */
 $(function() {
-    /* This is our first test suite - a test suite just contains
-     * a related set of tests. This suite is all about the RSS
-     * feeds definitions, the allFeeds variable in our application.
-     */
     describe('RSS Feeds', function() {
-        /* This is our first test - it tests to make sure that the
-         * allFeeds variable has been defined and that it is not
-         * empty. Experiment with this before you get started on
-         * the rest of this project. What happens when you change
-         * allFeeds in app.js to be an empty array and refresh the
-         * page?
+        /* Test making sure that the allFeeds variable
+         * has been defined and that it is not empty.
          */
         it('are defined', function() {
             expect(allFeeds).toBeDefined();
             expect(allFeeds.length).not.toBe(0);
         });
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a URL defined
-         * and that the URL is not empty.
+        /* Test checking that all feed sources in the allFeeds
+         * object exist, have a URL defined and that the URL is not empty.
          */
 
         it('have URLs', function() {
             allFeeds.forEach(function(feed) {
-                expect(feed.url).toBeDefined();
-                expect(feed.url.length).not.toBe(0);
+                // Truthy in this situation covers cases where feed.url 
+                // is undefined and where it is an empty string
+                expect(feed.url).toBeTruthy();
             });
         });
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a name defined
+        /* Test looping through each feed in the 
+         * allFeeds object and ensuring it has a name defined
          * and that the name is not empty.
          */
 
         it('have names', function() {
             allFeeds.forEach(function(feed) {
-                expect(feed.name).toBeDefined();
-                expect(feed.name.length).not.toBe(0);
+                expect(feed.name).toBeTruthy();
             });
         });
 
     });
 
-    /* TODO: Write a new test suite named "The menu" */
 
     describe('The menu', function() {
+        var defaultClass, removeClass, addClassBack;
 
-        /* TODO: Write a test that ensures the menu element is
-         * hidden by default. You'll have to analyze the HTML and
-         * the CSS to determine how we're performing the
-         * hiding/showing of the menu element.
+        /* beforeEach will record whether body has the menu-hidden class when
+         * 1) page loads (defaultClass) 
+         * 2) after 1st menu-icon click (removeClass)
+         * 3) after 2nd menu-icon click (addClassBack)
          */
+        beforeEach(function() {
+            defaultClass = $('body').hasClass('menu-hidden'); 
+            $('.menu-icon-link').trigger('click');
+            removeClass = $('body').hasClass('menu-hidden');
+            $('.menu-icon-link').trigger('click');
+            addClassBack = $('body').hasClass('menu-hidden');
+        });
 
+        // Test ensuring the menu element is hidden by default.
         it('is hidden by default', function() {
-            expect($('body').hasClass('menu-hidden')).toBe(true);
+            expect(defaultClass).toBe(true);
         });
 
-        /* TODO: Write a test that ensures the menu changes
-         * visibility when the menu icon is clicked. This test
-         * should have two expectations: does the menu display when
-         * clicked and does it hide when clicked again.
-         */
+        it('displays after click', function() {
+            expect(removeClass).toBe(false);
+        });        
 
-        it('displays/hides when icon is clicked', function() {
-            if ($('body').hasClass('menu-hidden')) {
-                expect($('.slide-menu').position().left).toBeLessThan(0);
-            } else {
-                expect($('.slide-menu').position().left).not.toBeLessThan(0);
-            }
-        });
-
+        it('hides after second click', function() {
+            expect(addClassBack).toBe(true);
+        });        
     });
 
-    /* TODO: Write a new test suite named "Initial Entries" */
 
     describe('Initial Entries', function() {
 
-        /* TODO: Write a test that ensures when the loadFeed
-         * function is called and completes its work, there is at least
-         * a single .entry element within the .feed container.
-         * Remember, loadFeed() is asynchronous so this test will require
-         * the use of Jasmine's beforeEach and asynchronous done() function.
+        /* Test ensuring loadFeed function is called and 
+         * completes its work & there is at least a single
+         * .entry element within the .feed container.
          */
 
         beforeEach(function(done) {
-            loadFeed(0, function() {
-                done();
-            });
+            loadFeed(0, done);
         });
 
         it('asynchronous function is run successfully and loads at least one .entry in .feed', function(done) {
             expect(self.initialComplete).toBe(true);
-            expect($('.feed').find('.entry').length).not.toBeLessThan(1);
+            expect($('.feed .entry').length).not.toBeLessThan(1);
             done();
         });
 
     });
 
-    /* TODO: Write a new test suite named "New Feed Selection" */
 
     describe('New Feed Selection', function() {
 
-        /* TODO: Write a test that ensures when a new feed is loaded
-         * by the loadFeed function that the content actually changes.
-         * Remember, loadFeed() is asynchronous.
+        var entryFeedOne, entryFeedTwo;
+
+
+        /* beforeEach will run loadFeed asynchronously twice & record 
+         * the text from $('.entry') array when:
+         * 1) page loads first feed (entryFeedOne) 
+         * 2) page loads second feed (entryFeedTwo)
          */
-
-        var entryFeedOne,
-            entryFeedTwo;
-
-
-        /* I inverted the loadFeed ID to run to loadFeed(1) prior the loadFeed(0) so that the 
-         * page would correctly start on Udacity Blog feed selection
-         */
-
-        describe('First AJAX runs', function() {
-            beforeEach(function(done) {
-                loadFeed(1, function() {
+        beforeEach(function(done) {
+            loadFeed(1, function() {
+                entryFeedOne = $('.entry').text();
+                loadFeed(0, function() {
+                    entryFeedTwo = $('.entry').text();
                     done();
                 });
-            });
-
-            it('and loads first batch of feeds', function(done) {
-                entryFeedOne = $('.entry').text();
-                expect(entryFeedOne).toBeDefined();
-                expect(entryFeedOne.length).not.toBeLessThan(0);
-                done();
             });
         });
 
-        describe('Second AJAX runs', function() {
-            beforeEach(function(done) {
-                loadFeed(0, function() {
-                    done();
-                });
-            });
 
-            it('and loads a different batch of feeds', function(done) {
-                entryFeedTwo = $('.entry').text();
-                expect(entryFeedTwo).toBeDefined();
-                expect(entryFeedTwo.length).not.toBeLessThan(0);
-                expect(entryFeedOne).not.toEqual(entryFeedTwo);
-                done();
-            });
+        // Test ensuring that both feeds have loaded and that they are not empty
+
+        it('feeds are loaded successfully', function() {
+            expect(entryFeedOne).toBeTruthy();
+            expect(entryFeedTwo).toBeTruthy();
+        });
+
+        // Test ensuring that both loaded feeds are different 
+
+        it('loaded feeds are different from one another', function() {
+            expect(entryFeedOne).not.toEqual(entryFeedTwo);
         });
     });
 
