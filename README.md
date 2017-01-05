@@ -8,7 +8,7 @@ Simply download the repository and launch index.html in your favorite browser to
 
 ### Prerequisites
 
-No prerequisite appart from an internet connection.
+No prerequisite apart from an internet connection.
 
 ## Built With
 
@@ -18,5 +18,5 @@ No prerequisite appart from an internet connection.
 
 ## Authors
 
-** App by the [Udacity Dev Team](https://github.com/udacity/frontend-nanodegree-feedreader)**
-** Test Environment by [Alexis Bellet](https://github.com/SpaceyRezum)**
+* App by the [Udacity Dev Team](https://github.com/udacity/frontend-nanodegree-feedreader)
+* Test Environment by [Alexis Bellet](https://github.com/SpaceyRezum)
