@@ -86,10 +86,9 @@ $(function() {
             loadFeed(0, done);
         });
 
-        it('asynchronous function is run successfully and loads at least one .entry in .feed', function(done) {
+        it('asynchronous function is run successfully and loads at least one .entry in .feed', function() {
             expect(self.initialComplete).toBe(true);
-            expect($('.feed .entry').length).not.toBeLessThan(1);
-            done();
+            expect($('.feed .entry').length).toBeGreaterThan(0);
         });
 
     });
